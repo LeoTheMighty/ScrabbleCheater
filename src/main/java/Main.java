@@ -1,16 +1,22 @@
 import java.io.InputStream;
 
 /**
- *
+ * The entrance class for the ScrabbleCheater project.
  */
 public class Main {
   // How many moves to display
-  final static int NUM_MOVES = 5;
-  final static String dictResourcePath = "dictionaries/scrabble.txt";
-  final static String letterBoardResourcePath = "letterBoards/scrabble3.csv";
-  final static String multiplierBoardResourcePath = "multiplierBoards/scrabble.csv";
-  final static String scoreResourcePath = "letterScores.csv";
+  private final static int NUM_MOVES = 5;
+  // The resource paths for the files (relative to the /src/main/resources folder)
+  private final static String dictResourcePath = "dictionaries/scrabble.txt";
+  private final static String letterBoardResourcePath = "letterBoards/scrabble3.csv";
+  private final static String multiplierBoardResourcePath = "multiplierBoards/scrabble.csv";
+  private final static String scoreResourcePath = "letterScores.csv";
 
+  /**
+   * The main function for the ScrabbleCheater project.
+   *
+   * @param args The arguments passed into the function.
+   */
   public static void main(String[] args) {
     // Choose the type of board to get the best move for
     InputStream dictSource = Main.class.getResourceAsStream(dictResourcePath);
@@ -47,10 +53,9 @@ public class Main {
 
     System.out.println(b.toString());
 
-    // Add the letters
     Solver solver = new Solver(b, d, s);
 
-    // Get the answer
+    // Get and print out the moves
     for (Move m : solver.bestMoves(NUM_MOVES)) {
       System.out.println(m.toString());
     }

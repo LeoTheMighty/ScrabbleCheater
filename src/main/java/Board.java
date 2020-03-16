@@ -4,7 +4,8 @@ import java.util.Scanner;
 import java.util.Stack;
 
 /**
- *
+ * Holds all the board information, like currently placed tiles, the premium multiplier spaces, and
+ * the current tile set information.
  */
 public class Board {
   // The board to hold the info
@@ -18,8 +19,13 @@ public class Board {
   // Represents an empty spot on the board
   static final char emptyCharacter = ' ';
 
-  public Board() {}
-
+  /**
+   * Initializes the board with both a letter board source and a multiplier board source to reach
+   * a full board configuration.
+   *
+   * @param letterBoardSource The source for the letter board CSV file.
+   * @param multiplierBoardSource The source for the multiplier board CSV file.
+   */
   public Board(InputStream letterBoardSource, InputStream multiplierBoardSource) {
     this(multiplierBoardSource);
     Scanner sc = new Scanner(letterBoardSource);
@@ -54,7 +60,7 @@ public class Board {
   /**
    * Initializes a board from the board file.
    *
-   * @param multiplierBoardSource The source for the multiplier board.
+   * @param multiplierBoardSource The source for the multiplier board CSV file.
    */
   public Board(InputStream multiplierBoardSource) {
     Scanner sc = new Scanner(multiplierBoardSource);
@@ -98,6 +104,20 @@ public class Board {
     return tiles;
   }
 
+  /**
+   * Gets the individual word score for an sequence of letters placed to create a word. This doesn't
+   * take into account adjacent words and simply just goes in a line to finish the word and
+   * calculates the score based on that. Returns -1 if it is an illegal move or if the word is not
+   * in the dictionary.
+   *
+   * @param placedLetters The String representation of the letters to place in order.
+   * @param r The row of the first spot in the word.
+   * @param c The column of the first spot in the word.
+   * @param horizontal Whether or not the word is being placed horizontally.
+   * @param d The dictionary to validate the words with.
+   * @param scorer The scorer to evaluate the individual letter scores.
+   * @return The score of the word or -1 if the placed word is invalid.
+   */
   private int wordScore(String placedLetters, int r, int c, boolean horizontal, Dictionary d, LetterScorer scorer) {
     int score = 0;
     int wordMultiplier = 1;
@@ -176,10 +196,10 @@ public class Board {
    *
    * TODO this took way too long to write, I might have been a little bit too tricky here.
    *
-   * @param r
-   * @param c
-   * @param horizontal
-   * @return
+   * @param r The row of the spot to check if there is an adjacent word for.
+   * @param c The column of the spot ot check if there is an adjacent word for.
+   * @param horizontal Whether the main word was going horizontal or not.
+   * @return The y or x position of the start of the adjacent word or -1 if there is none.
    */
   private int adjacentWordIndex(int r, int c, boolean horizontal) {
     // We're looking for a perpendicular adjacent word
@@ -208,9 +228,11 @@ public class Board {
   }
 
   /**
+   * Updates the given move object with its score and the main word if it's a valid move.
    *
-   *
-   * @param m
+   * @param m The move to check and update for.
+   * @param dictionary The dictionary to check the words for.
+   * @param scorer The scorer to evaluate the individual letter scores.
    * @return If the move is valid.
    */
   public boolean updateMoveScore(Move m, Dictionary dictionary, LetterScorer scorer) {
@@ -291,23 +313,6 @@ public class Board {
     return hasAdjacent;
   }
 
-  public Board deepCopy() {
-    Board newBoard = new Board();
-    newBoard.width = width;
-    newBoard.height = height;
-    newBoard.letterBoard = new Character[height][width];
-    newBoard.multiplierBoard = new Multiplier[height][width];
-
-    for (int r = 0; r < height; r++) {
-      for (int c = 0; c < width; c++) {
-        newBoard.setMultiplier(getMultiplier(c, r), c, r);
-        newBoard.setLetter(getLetter(c, r), c, r);
-      }
-    }
-
-    return newBoard;
-  }
-
   public String getTiles() {
     return tiles;
   }
@@ -336,6 +341,9 @@ public class Board {
     return multiplierBoard[y][x];
   }
 
+  /**
+   * Gets the String representation for the multiplier board.
+   */
   public String multiplierBoardString() {
     String border = "#";
     StringBuilder sb = new StringBuilder();
@@ -360,6 +368,9 @@ public class Board {
     return sb.toString();
   }
 
+  /**
+   * Gets the String representation for the letter board.
+   */
   public String letterBoardString() {
     String border = "#";
     StringBuilder sb = new StringBuilder();
